@@ -1,7 +1,5 @@
 import ArticlePreview from './ArticlePreview';
 import React from 'react';
-import Nav from "./Nav";
-import Footer from "./Footer";
 import axios from 'axios';
 
 class ArticleList extends React.Component<any, any> {
@@ -13,10 +11,13 @@ class ArticleList extends React.Component<any, any> {
   }
 
   componentDidMount() {
+    const token = window.localStorage.getItem('jwt');
+    const Authorization = token ? {'Authorization': `Token ${token}`} : {};
+    const byAuthor = this.props.author ? `?author=${this.props.author}` : '';
     const config = {
       method: 'get',
-      url: 'http://localhost:3000/api/articles',
-      headers: { }
+      url: `http://localhost:3000/api/articles${byAuthor}`,
+      headers: { ...Authorization }
     } as any;
    
     axios(config)
@@ -55,16 +56,19 @@ class ArticleList extends React.Component<any, any> {
   }
 
   render() {  
+    if(this.props.onlyList) {
+      return (
+        <>
+          {this.renderArticlesList()}
+        </>
+      )
+    }
     return (
-      <>
-      <Nav/>
       <div className="container page">
         <div className="row">
-            {this.renderArticlesList()}
-          </div>
+          {this.renderArticlesList()}
         </div>
-      <Footer/>
-      </>
+      </div>
     );
   }
 }

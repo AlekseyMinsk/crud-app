@@ -1,3 +1,10 @@
-.author:first-letter {
+.author::first-letter {
     text-transform: capitalize;
+}
+span.author {
+    display: inline-block;
+}
+.please-messages {
+    font-weight: 700;
+    color: rgb(55, 58, 60);
 }

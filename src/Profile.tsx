@@ -1,25 +1,70 @@
-import Nav from "./Nav"; 
-import Footer from "./Footer";
+import React from 'react';
+import axios from 'axios';
+import favoriteAuthor from './methods/favoriteAuthor';
+import ArticleList from './ArticleList';
 
-export default function Profile() {
-  return (
-    <>
-      <Nav/>
+class Profile extends React.Component<any, any> {
+  constructor(props:any) {
+    super(props);
+    this.state = {
+      profile: null
+    };
+  }
+  handleFavoriteUser () {
+    const user = this.state.profile;
+    const getFavoriteAuthor = (profile:any) => {
+      if(user.following !== profile.following) {
+        this.setState({profile: profile})
+      }
+    }
+    favoriteAuthor(user, getFavoriteAuthor);
+  }
+  componentDidMount () {
+    const token = window.localStorage.getItem('jwt');
+    const { username } = this.props.match.params;
+    const config = {
+      method: 'get',
+      url: `http://localhost:3000/api/profiles/${username}`,
+      headers: { 
+        'Authorization': `Token ${token}`
+      }
+    } as any;
+
+    axios(config)
+    .then((response:any) => {
+      this.setState({profile: response.data.profile});
+    })
+    .catch((error:any) => {
+      console.log(error);
+    });
+  }
+  render() {
+    const token = window.localStorage.getItem('jwt');
+    const disabledClass = token ? '' : 'disabled';
+    const profile = this.state.profile;
+    const btnOutlineSecondary = 'btn-outline-secondary';
+    const btnOutlinePrimary = 'btn-outline-primary';
+    const authorFollowClass = `btn btn-sm ${profile?.following ? btnOutlinePrimary : btnOutlineSecondary} ${disabledClass}`;
+    const image = profile?.image || 'https://static.productionready.io/images/smiley-cyrus.jpg';
+    if(!profile) {
+      return (
+        <div className="article-preview">Loading...</div>
+      )
+    };
+    return (
       <div className="profile-page">
         <div className="user-info">
           <div className="container">
             <div className="row">
               <div className="col-xs-12 col-md-10 offset-md-1">
-                <img src="http://i.imgur.com/Qr71crq.jpg" className="user-img" />
-                <h4>Eric Simons</h4>
+                <img src={image} className="user-img" />
+                <h4 className="author">{profile.username}</h4>
                 <p>
-                  Cofounder @GoThinkster, lived in Aol&lsquo;s HQ for a few months, kinda looks like Peeta from the
-                  Hunger Games
+                  {profile.bio}
                 </p>
-                <button className="btn btn-sm btn-outline-secondary action-btn">
-                  <i className="ion-plus-round" />
-                  &nbsp; Follow Eric Simons
-                </button>
+                <button className={authorFollowClass} onClick={() => this.handleFavoriteUser()}>
+                <i className="ion-plus-round" />&nbsp; Follow <span className="author">{profile.username}</span>
+              </button>
               </div>
             </div>
           </div>
@@ -31,70 +76,19 @@ export default function Profile() {
               <div className="articles-toggle">
                 <ul className="nav nav-pills outline-active">
                   <li className="nav-item">
-                    <a className="nav-link active" href="">
-                      My Articles
-                    </a>
-                  </li>
-                  <li className="nav-item">
-                    <a className="nav-link" href="">
-                      Favorited Articles
+                    <a className="nav-link active author" href="">
+                      {profile.username}&apos;s articles
                     </a>
                   </li>
                 </ul>
               </div>
-
-              <div className="article-preview">
-                <div className="article-meta">
-                  <a href="/#/profile/ericsimmons">
-                    <img src="http://i.imgur.com/Qr71crq.jpg" />
-                  </a>
-                  <div className="info">
-                    <a href="/#/profile/ericsimmons" className="author">
-                      Eric Simons
-                    </a>
-                    <span className="date">January 20th</span>
-                  </div>
-                  <button className="btn btn-outline-primary btn-sm pull-xs-right">
-                    <i className="ion-heart" /> 29
-                  </button>
-                </div>
-                <a href="/#/how-to-build-webapps-that-scale" className="preview-link">
-                  <h1>How to build webapps that scale</h1>
-                  <p>This is the description for the post.</p>
-                  <span>Read more...</span>
-                </a>
-              </div>
-
-              <div className="article-preview">
-                <div className="article-meta">
-                  <a href="/#/profile/albertpai">
-                    <img src="http://i.imgur.com/N4VcUeJ.jpg" />
-                  </a>
-                  <div className="info">
-                    <a href="/#/profile/albertpai" className="author">
-                      Albert Pai
-                    </a>
-                    <span className="date">January 20th</span>
-                  </div>
-                  <button className="btn btn-outline-primary btn-sm pull-xs-right">
-                    <i className="ion-heart" /> 32
-                  </button>
-                </div>
-                <a href="/#/the-song-you-wont-ever-stop-singing" className="preview-link">
-                  <h1>The song you won&lsquo;t ever stop singing. No matter how hard you try.</h1>
-                  <p>This is the description for the post.</p>
-                  <span>Read more...</span>
-                  <ul className="tag-list">
-                    <li className="tag-default tag-pill tag-outline">Music</li>
-                    <li className="tag-default tag-pill tag-outline">Song</li>
-                  </ul>
-                </a>
-              </div>
+              <ArticleList onlyList={true} author={profile.username}/>
             </div>
           </div>
         </div>
       </div>
-      <Footer/>
-    </>
-  );
+    );
+  }
 }
+
+export default Profile;

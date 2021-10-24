@@ -1,9 +1,21 @@
-import React from "react";
-import { render, screen } from "@testing-library/react";
-import App from "./App";
+import ReactDOM from 'react-dom';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event'
+import Footer from './Footer'
+import Login from './Login';
 
-test("renders conduit link", () => {
-  render(<App />);
-  const linkElement = screen.getAllByText(/conduit/i)[0];
-  expect(linkElement).toBeInTheDocument();
+describe('Footer', () => {
+  it('renders without crashing', () => {
+    const div = document.createElement('div');
+    ReactDOM.render(<Footer/>, div);
+  });
 });
+
+describe('Input', () => {
+  it('check insert email', () => {
+    render(<Login />);
+    const input = screen.getByPlaceholderText(/email/i);
+    userEvent.type(input, 'alice@example.com');
+    expect(input).toHaveValue('alice@example.com');
+  })
+})

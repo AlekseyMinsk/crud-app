@@ -1,20 +1,8 @@
-import Nav from "./Nav";
-
 export default function Logout() {
+  window.localStorage.removeItem('jwt');
+  window.localStorage.removeItem('userName');
+  window.location.href = "/";
   return (
-    <>
-      <Nav />
-      <footer>
-        <div className="container">
-          <a href="/#" className="logo-font">
-            conduit
-          </a>
-          <span className="attribution">
-            An interactive learning project from <a href="https://thinkster.io">Thinkster</a>. Code &amp; design
-            licensed under MIT.
-          </span>
-        </div>
-      </footer>
-    </>
+    <div className="article-preview">Loading...</div>
   );
 }
