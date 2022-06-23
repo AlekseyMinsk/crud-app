@@ -1,5 +1,3 @@
-# Assignment for Frontend Engineer job applicants
-
 ## Background
 
 Your task is to implement a simple CRUD application. The application is based on [Conduit, "The mother of all demo apps"](https://github.com/gothinkster/realworld), which is a simple clone of [Medium.com](https://medium.com/). The demo of the application can be found at https://demo.realworld.io/.
